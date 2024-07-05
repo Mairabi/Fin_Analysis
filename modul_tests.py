@@ -23,7 +23,6 @@ class SomeTests(TestCase):
             if search in text:
                 res = True
                 count_of_i += 1
- .
         self.assertTrue(res)  # Проверяем, что искомый текст найден
         self.assertEqual(count_of_i, 1)  # Проверяем, что количество совпадений равно 1
 
