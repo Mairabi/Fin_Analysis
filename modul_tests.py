@@ -7,7 +7,7 @@ tex = 'Бухгалтерский баланс'
 os.environ['TESSDATA_PREFIX'] = "E:/PO/Tesseract/tessdata"
 
 
-class SomeTests(TestCase):
+class TableExtractTest(TestCase):
 
     # Поиск страницы, с которой начинается бух. баланс
     def test_page_number_detection(self):
@@ -58,3 +58,15 @@ class SomeTests(TestCase):
 
         for value in loss:
             print(value)
+
+class RatioCalculateTest(TestCase):
+
+    def test_calculate_own_working_capital(self):
+        capital = [913570, 723715, 627671]
+        non_current_assets = [318073, 237015, 306853]
+        own_working_capital = []
+        for num1, num2 in zip(capital, non_current_assets):
+            own_working_capital.append(num1 - num2)
+        self.assertEqual(own_working_capital, [595497, 486700, 320818])
+
+
