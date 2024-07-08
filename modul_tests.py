@@ -1,5 +1,6 @@
 import pymupdf
 import os
+import re
 from unittest import TestCase
 
 tex = 'Бухгалтерский баланс'
@@ -16,7 +17,6 @@ class SomeTests(TestCase):
         res = False
 
         for i in range(doc.page_count):
-            # text = page.get_text()
             page = doc[i]
             text = page.get_text()
 
@@ -45,8 +45,16 @@ class SomeTests(TestCase):
         self.assertTrue(res)  # Проверяем, что искомый текст найден
         self.assertEqual(count_of_i, 1)  # Проверяем, что количество совпадений равно 1
 
-    def test_fake(self):
-        search = 'Бухгалтерский баланс'
-        s = ['фывфывыпппп', 'кцуква', 'бю.вазз', 'у444уцк', 'Бухгалтерский баланс']
-        for w in s:
-            self.assertIn(search, w)
+    def test_loss_check(self):
+        pattern = r'\d'
+        loss = ['(34 500)', '(6543 455)', '-', '234 233', '568 876', '(125 4345)', '-']
+        for i, item in enumerate(loss):
+            if re.search(pattern, item):
+                cleaned_number = item.replace(' ', '')
+                if cleaned_number[0] == '(':
+                    loss[i] = -int(cleaned_number[1:-1])
+                else:
+                    loss[i] = int(cleaned_number)
+
+        for value in loss:
+            print(value)

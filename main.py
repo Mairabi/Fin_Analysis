@@ -15,9 +15,7 @@ if __name__ == '__main__':
     #
     # print(matches)
     s = 'asdss'
-    m = 0
-    if 's' in s:
-        m += 1
-        print(m)
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    # print(s[1:-1])
+    l = [1, 34, 6434, 6764]
+    for i in range(len(l)):
+        print(str(l[i]))
