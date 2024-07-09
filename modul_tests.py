@@ -61,6 +61,7 @@ class TableExtractTest(TestCase):
         for value in loss:
             print(value)
 
+
 class RatioCalculateTest(TestCase):
 
     def test_calculate_own_working_capital(self):
@@ -180,5 +181,7 @@ class RatioCalculateTest(TestCase):
             "Срок товарного кредита": credit_terms
         }
 
-
-
+    def test_create_new_filename(self):
+        file1 = 'xlx/Отчет о финансовых результатах. Лист 1.xls'
+        file_out1 = re.sub(r'\.xlsx*$', '.pdf', file1)
+        self.assertEqual(file_out1, 'xlx/Отчет о финансовых результатах. Лист 1.pdf')

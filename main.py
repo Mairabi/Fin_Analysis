@@ -1,11 +1,11 @@
-import pymupdf
+import decimal
+from decimal import Decimal
 from ratio_extractor import RatioExtractor
 
 
 def main():
     filename_in = 'xlx\Бухгалтерский баланс. Лист 2.xls'
-    filename_out = "Бухгалтерский баланс. Лист 2.pdf"
-    extractor = RatioExtractor(filename_in, filename_out)
+    extractor = RatioExtractor(filename_in)
     balance = extractor.get_data()
     print(balance)
 

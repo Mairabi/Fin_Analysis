@@ -4,15 +4,16 @@ from aspose.cells import Workbook
 
 
 class RatioExtractor:
-    def __init__(self, filename_in, filename_out, economic_values=None):
+    def __init__(self, filename_in, economic_values=None, filename_out=''):
         self.filename_in = filename_in
         self.filename_out = filename_out
         self.economic_values = economic_values
 
     # Преобразование xlx файлов в pdf
-    def xlx_to_pdf(self, filename_in, filename_out):
+    def xlx_to_pdf(self, filename_in):
+        self.filename_out = re.sub(r'\.xlsx*$', '.pdf', filename_in)
         workbook = Workbook(filename_in)
-        workbook.save(filename_out)
+        workbook.save(self.filename_out)
 
     # Очистка извлеченных строк таблицы от посторонних символов
     def table_cleaner(self, table):
@@ -57,7 +58,7 @@ class RatioExtractor:
 
     # Основная функция
     def get_data(self):
-        self.xlx_to_pdf(self.filename_in, self.filename_out)
+        self.xlx_to_pdf(self.filename_in)
 
         doc = pymupdf.open(self.filename_out)
         page = doc[0]
