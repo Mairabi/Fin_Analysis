@@ -37,10 +37,12 @@ def calculate_absolute_financial_stability(capital, non_current_assets, z, kT, k
             }
 
 
-def calculate_financial_stability(capital, balance, sum_passive, own_working_capital):
+def calculate_financial_stability(capital, balance,  kT, kt, ap, own_working_capital):
     # capital - капитал и резервы
     # balance - баланс
-    # sum_passive - заемные средства (долгосрочные + краткосрочные пассивы)
+    # kT - долгосрочные пассивы
+    # kt - краткосрочные кредиты и займы
+    # ap - кредиторская задолженность
     # own_working_capital - собственные оборотные средства
 
     equity_ratio = []  # К. автономии
@@ -49,8 +51,8 @@ def calculate_financial_stability(capital, balance, sum_passive, own_working_cap
     for num1, num2 in zip(capital, balance):
         equity_ratio.append(Decimal(num1) / Decimal(num2))
 
-    for num1, num2 in zip(sum_passive, capital):
-        debt_to_equity_ratio.append(Decimal(num1) / Decimal(num2))
+    for num1, num2, num3, num4 in zip(kT, kt, ap, capital):
+        debt_to_equity_ratio.append(Decimal(num1 + num2 + num3) / Decimal(num4))
 
     for num1, num2 in zip(own_working_capital, capital):
         mobility_ratio.append(Decimal(num1) / Decimal(num2))
@@ -77,27 +79,27 @@ def calculate_liquidity_ratios(d, kt, ap, r):
             'Ликвидность': current_liquidity_ratios}
 
 
-def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, equity):
+def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
     # np - Чистая прибыль
     # cc - Себестоимость
     # oc - Основные средства
     # pf - Прибыль от продаж
     # revenue - Выручка
     # assets - Активы
-    # equity - собственный капитал
+    # capital- собственный капитал
 
     rom_s = []
     rofa_s = []
     ros_s = []
     roa_s = []
     roe_s = []
-    for np_val, cc_val, oc_val, pf_val, revenue_val, assets_val, equity_val in zip(np, cc, oc, pf, revenue, assets,
-                                                                                   equity):
+    for np_val, cc_val, oc_val, pf_val, revenue_val, assets_val, capital_val in zip(np, cc, oc, pf, revenue, assets,
+                                                                                   capital):
         rom = (Decimal(np_val) / Decimal(cc_val)) * 100
         rofa = (Decimal(np_val) / Decimal(oc_val)) * 100
         ros = (Decimal(pf_val) / Decimal(revenue_val)) * 100
         roa = (Decimal(np_val) / Decimal(assets_val)) * 100
-        roe = (Decimal(np_val) / Decimal(equity_val)) * 100
+        roe = (Decimal(np_val) / Decimal(capital_val)) * 100
 
         rom_s.append(rom)
         rofa_s.append(rofa)
@@ -117,10 +119,10 @@ def calculate_turnover_ratios(revenue, balance, capital, kT, kt, f, cc, zp, r):
     # balance - баланс (среднегодовой)
     # capital - капитал и резервы (ср. годовое значение)
     # kT - долгосрочные пассивы
-    # kt - краткосрочные пассивы
+    # kt - краткосрочные кредиты и займы
     # f - внеоборотные активы (ср. знач. за год)
     # cс - Себестоимость реализованной продукции
-    # z - средняя стоимость запасов
+    # zp - средняя стоимость запасов
     # r - дербитораская задолженность
     # t - продолжительность производственного цикла или продолжительность года
 
