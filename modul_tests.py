@@ -181,7 +181,39 @@ class RatioCalculateTest(TestCase):
             "Срок товарного кредита": credit_terms
         }
 
+
+class TestNewIdeas(TestCase):
+
     def test_create_new_filename(self):
         file1 = 'xlx/Отчет о финансовых результатах. Лист 1.xls'
         file_out1 = re.sub(r'\.xlsx*$', '.pdf', file1)
         self.assertEqual(file_out1, 'xlx/Отчет о финансовых результатах. Лист 1.pdf')
+
+    def test_search_length_of_first_dict_element(self):
+        # Определяю минимальную длину списка первого элемента двух словарей
+        data = {
+            '1110': [47372, 272, 91190],
+            '1120': [4899, 48399, 83990],
+
+        }
+
+        data2 = {
+            '1140': [47372, 272],
+            '1150': [4899, 48399],
+        }
+
+        # Получаем первый ключ (порядок в словаре в Python 3.7+ соответствует порядку добавления)
+        first_key = list(data.keys())[0]
+        first_key2 = list(data2.keys())[0]
+
+        # Получаем список, соответствующий первому ключу
+        first_list = data[first_key]
+        second_list = data2[first_key2]
+
+        # Определяем длину этого списка
+        first_list_length = len(first_list)
+        second_list_length = len(second_list)
+
+        self.assertEqual(first_list_length, 3)
+        self.assertEqual(second_list_length, 2)
+        self.assertGreater(first_list_length, second_list_length)

@@ -1,4 +1,8 @@
+import decimal
 from decimal import Decimal
+
+# Количество знаков после запятой
+decimal.getcontext().prec = 6
 
 
 def calculate_absolute_financial_stability(capital, non_current_assets, z, kT, kt, ap):

@@ -4,8 +4,10 @@ from ratio_extractor import RatioExtractor
 
 
 def main():
-    filename_in = 'xlx\Бухгалтерский баланс. Лист 2.xls'
-    extractor = RatioExtractor(filename_in)
+    file1 = 'xlx/Бухгалтерский баланс. Лист 1.xls'
+    file2 = 'xlx/Бухгалтерский баланс. Лист 2.xls'
+    file3 = 'xlx/Отчет о финансовых результатах. Лист 1.xls'
+    extractor = RatioExtractor(file1)
     balance = extractor.get_data()
     print(balance)
 

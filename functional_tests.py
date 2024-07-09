@@ -1,57 +1,53 @@
-import pymupdf
-import re
-from pprint import pprint
+import unittest
+from ratio_extractor import RatioExtractor
 
+class TestDataExtraction(unittest.TestCase):
 
-def table_cleaner(table):
-    for row_num in range(len(table)):
-        row = table[row_num]
-        cleaned_row = [
-            item.replace('\n', ' ') if item is not None and '\n' in item else 'None' if item is None else item
-            for item in row]
-        print(cleaned_row)
+    def get_first_list_length(self, data):
+        """
+        Возвращает длину списка первого элемента словаря.
 
+        :param data: Словарь, где ключами являются строки, а значениями списки.
+        :return: Длина списка, соответствующего первому ключу в словаре.
+        """
+        if not data:
+            raise ValueError("Словарь пустой")
 
-def dict_creator(table):
-    pattern = r"1[1-6][0-9][0-1]"
-    economic_values = {}
-    # Итеративно обходим каждую строку в таблице
-    for row_num in range(len(table)):
-        row = table[row_num]
-        code = [s for s in row if re.fullmatch(pattern, s)]
-        code_id = row.find(code)
-        economic_values[code[0]] = row[code_id + 1:]
-    return economic_values
+        # Получаем первый ключ (порядок в словаре в Python 3.7+ соответствует порядку добавления)
+        first_key = list(data.keys())[0]
 
+        # Получаем список, соответствующий первому ключу
+        first_list = data[first_key]
 
-def table_converter(table):
-    table_string = ''
-    # Итеративно обходим каждую строку в таблице
-    for row_num in range(len(table)):
-        row = table[row_num]
-        # Удаляем разрыв строки из текста с переносом
-        cleaned_row = [
-            item.replace('\n', ' ') if item is not None and '\n' in item else 'None' if item is None else item
-            for item in row]
-        # Преобразуем таблицу в строку
-        table_string += ('|' + '|'.join(cleaned_row) + '|' + '\n')
-    # Удаляем последний разрыв строки
-    table_string = table_string.replace("|None", '')[:-1]
-    return table_string
+        # Определяем длину этого списка
+        return len(first_list)
 
+    def test_extract_data_and_calculate_ratios(self):
+        # Тест: пользователь добавляет несколько файлов
 
-doc = pymupdf.open("Бух. отчет Сургутнефтегаз.pdf")
-page = doc[0]
-tabs = page.find_tables(snap_tolerance=2.5)
+        file1 = 'xlx/Бухгалтерский баланс. Лист 1.xls'
+        file2 = 'xlx/Бухгалтерский баланс. Лист 2.xls'
+        file3 = 'xlx/Отчет о финансовых результатах. Лист 1.xls'
 
-print(f"{len(tabs.tables)} found on {page}")  # display number of found tables
+        # Информация успешно извлекается
 
-if tabs.tables:  # at least one table found?
-    tab = tabs[0].extract()
-    # pprint(tab)  # print content of first table
-    # res = table_converter(tab)
-    # res = dict_creator(tab)
-    # print(res)
-    table_cleaner(tab)
-else:
-    print("No tables!")
+        balance1 = RatioExtractor(file1).get_data()
+        balance2 = RatioExtractor(file2).get_data()
+        financials = RatioExtractor(file3).get_data()
+
+        self.assertIn('1100', balance1)
+        self.assertIn('1510', balance2)
+        self.assertIn('2340', financials)
+
+        # Определяем минимальную длину списка в словарях для поддержание соответсвия расчетов показателей.
+        # Т.к количество столбцов с показателями в балансе и фин. отчете может быть разным
+
+        len_b1 = self.get_first_list_length(balance1)
+        len_b2 = self.get_first_list_length(balance2)
+        len_f = self.get_first_list_length(financials)
+        min_len = min(len_b1, len_b2, len_f)
+
+        self.assertEqual(min_len, 2)
+
+        # Далее происходит расчет всех показателей
+
