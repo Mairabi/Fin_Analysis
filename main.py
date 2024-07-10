@@ -1,53 +1,81 @@
-from ratio_extractor import RatioExtractor
-import ratio_calculator
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
+from node import DataCreator
+
+# Пример данных для отображения
 
 
-def main():
-    file1 = 'xlx/Бухгалтерский баланс. Лист 1.xls'
-    file2 = 'xlx/Бухгалтерский баланс. Лист 2.xls'
-    file3 = 'xlx/Отчет о финансовых результатах. Лист 1.xls'
+class FinancialApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Финансовый Анализ")
+        self.geometry("800x600")
 
-    r1 = RatioExtractor(file1)
-    r2 = RatioExtractor(file2)
-    r3 = RatioExtractor(file3)
+        self.filepaths = []
+        self.data = None
+        self.years = None
 
-    balance1 = r1.get_data()
-    balance2 = r2.get_data()
-    financials = r3.get_data()
+        self.create_welcome_window()
 
-    years_of_balance1 = r1.years
-    years_of_balance2 = r2.years
-    years_of_balance3 = r3.years
+    def create_welcome_window(self):
+        welcome_frame = tk.Frame(self)
+        welcome_frame.pack(expand=True, fill=tk.BOTH)
 
-    # Объединяем все словари показателей в один
-    full_info = {**balance1, **balance2, **financials}
+        welcome_label = tk.Label(welcome_frame, text="Добро пожаловать.\nВыберите необходимые файлы",
+                                 font=("Times New Roman", 25), justify="center", anchor='center')
+        welcome_label.pack(pady=50)
 
-    abs_fin_stab = ratio_calculator.calculate_absolute_financial_stability(full_info['1300'], full_info['1100'],
-                                                                           full_info['1210'], full_info['1400'],
-                                                                           full_info['1510'], full_info['1520'])
+        select_button = tk.Button(welcome_frame, text="Выбрать файлы", font=("Times New Roman", 14),
+                                  command=self.select_files, width=15, height=2)
+        select_button.pack(pady=25)
 
-    fin_stab = ratio_calculator.calculate_financial_stability(full_info['1300'], full_info['1600'],
-                                                              full_info['1400'], full_info['1510'],
-                                                              full_info['1520'],
-                                                              abs_fin_stab['Собств. оборотные средства'])
+    # Здесь создаем экземпляр класса DataCreator и запускаем процедуры извлечения и расчетов
+    def select_files(self):
+        self.filepaths = filedialog.askopenfilenames(title="Выберите три файла", filetypes=[("Excel Files", "*.xls;*.xlsx")])
+        if len(self.filepaths) != 3:
+            messagebox.showerror("Ошибка", "Пожалуйста, выберите ровно три файла")
+        else:
+            data_creator = DataCreator(self.filepaths)
+            self.data = data_creator.get_ratios()
+            self.years = data_creator.years_of_balance
 
-    liquidity = ratio_calculator.calculate_liquidity_ratios(full_info['1250'], full_info['1510'],
-                                                            full_info['1520'], full_info['1230'])
+            self.create_main_window()
 
-    return_on = ratio_calculator.calculate_return_on_ratios(full_info['2400'], full_info['2120'],
-                                                            full_info['1150'], full_info['2200'],
-                                                            full_info['2110'], full_info['1600'][:-1],
-                                                            full_info['1300'][:-1])
+    def create_main_window(self):
+        for widget in self.winfo_children():
+            widget.destroy()
 
-    turnover = ratio_calculator.calculate_turnover_ratios(full_info['2110'], full_info['1600'][:-1],
-                                                          full_info['1300'][:-1], full_info['1400'][:-1],
-                                                          full_info['1510'], full_info['1100'][:-1],
-                                                          full_info['2120'], full_info['1210'][:-1],
-                                                          full_info['1230'][:-1])
+        tab_control = ttk.Notebook(self)
+        tab_control.pack(expand=1, fill="both")
 
-    # Собираем все расчеты в один словарь
-    fin_ratios = {**abs_fin_stab, **fin_stab, **liquidity, **return_on, **turnover}
+        style = ttk.Style()
+        style.configure("TNotebook.Tab", font=("Times New Roman", 14))
+
+        for tab_name, indicators in self.data.items():
+            tab_frame = ttk.Frame(tab_control)
+            tab_control.add(tab_frame, text=tab_name)
+
+            self.create_tab_content(tab_frame, indicators)
+
+    def create_tab_content(self, parent, indicators):
+        # Получаем количество годов для текущей вкладки
+        current_years = self.years[:len(next(iter(indicators.values())))]
+
+        # Создаем заголовок с годами
+        for j, year in enumerate(current_years):
+            year_label = tk.Label(parent, text=year, font=("Times New Roman", 12, "bold"))
+            year_label.grid(row=0, column=j + 1, padx=10, pady=5)
+
+        # Создаем строки с названиями показателей и их значениями за соответствующие годы
+        for i, (indicator_name, values) in enumerate(indicators.items()):
+            name_label = tk.Label(parent, text=indicator_name, font=("Times New Roman", 12), anchor="w")
+            name_label.grid(row=i + 1, column=0, padx=10, pady=5, sticky="w")
+
+            for j, value in enumerate(values):
+                value_label = tk.Label(parent, text=str(value), font=("Times New Roman", 12))
+                value_label.grid(row=i + 1, column=j + 1, padx=10, pady=5)
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    app = FinancialApp()
+    app.mainloop()

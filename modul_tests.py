@@ -276,4 +276,3 @@ class TestNewIdeas(TestCase):
             print(years)
 
             self.assertIn('2021', years)
-
