@@ -79,15 +79,15 @@ class TestDataExtraction(unittest.TestCase):
 
         return_on = ratio_calculator.calculate_return_on_ratios(full_info['2400'], full_info['2120'],
                                                                 full_info['1150'], full_info['2200'],
-                                                                full_info['2110'], full_info['1600'][:1],
-                                                                full_info['1300'][:1])
+                                                                full_info['2110'], full_info['1600'][:-1],
+                                                                full_info['1300'][:-1])
         print(return_on)
 
-        turnover = ratio_calculator.calculate_turnover_ratios(full_info['2110'], full_info['1600'][:1],
-                                                              full_info['1300'][:1], full_info['1400'][:1],
-                                                              full_info['1510'], full_info['1100'][:1],
-                                                              full_info['2120'], full_info['1210'][:1],
-                                                              full_info['1230'][:1])
+        turnover = ratio_calculator.calculate_turnover_ratios(full_info['2110'], full_info['1600'][:-1],
+                                                              full_info['1300'][:-1], full_info['1400'][:-1],
+                                                              full_info['1510'], full_info['1100'][:-1],
+                                                              full_info['2120'], full_info['1210'][:-1],
+                                                              full_info['1230'][:-1])
         print(turnover)
 
 

@@ -2,7 +2,7 @@ import decimal
 from decimal import Decimal
 
 # Количество знаков после запятой
-decimal.getcontext().prec = 6
+decimal.getcontext().prec = 4
 
 
 def calculate_absolute_financial_stability(capital, non_current_assets, z, kT, kt, ap):
@@ -38,6 +38,8 @@ def calculate_absolute_financial_stability(capital, non_current_assets, z, kT, k
 
 
 def calculate_financial_stability(capital, balance,  kT, kt, ap, own_working_capital):
+    decimal.getcontext().prec = 4
+
     # capital - капитал и резервы
     # balance - баланс
     # kT - долгосрочные пассивы
@@ -63,6 +65,7 @@ def calculate_financial_stability(capital, balance,  kT, kt, ap, own_working_cap
 
 
 def calculate_liquidity_ratios(d, kt, ap, r):
+    decimal.getcontext().prec = 4
     # d - день.средства и краткосрочные фин. вложения
     # kt - краткосрочные кредиты и займы
     # ap - кредиторская задолженность
@@ -80,6 +83,7 @@ def calculate_liquidity_ratios(d, kt, ap, r):
 
 
 def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
+    decimal.getcontext().prec = 4
     # np - Чистая прибыль
     # cc - Себестоимость
     # oc - Основные средства
@@ -88,20 +92,20 @@ def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
     # assets - Активы
     # capital- собственный капитал
 
-    rom_s = []
+    # rom_s = []
     rofa_s = []
     ros_s = []
     roa_s = []
     roe_s = []
     for np_val, cc_val, oc_val, pf_val, revenue_val, assets_val, capital_val in zip(np, cc, oc, pf, revenue, assets,
                                                                                    capital):
-        rom = (Decimal(np_val) / Decimal(cc_val)) * 100
+        # rom = (Decimal(np_val) / Decimal(cc_val)) * 100
         rofa = (Decimal(np_val) / Decimal(oc_val)) * 100
         ros = (Decimal(pf_val) / Decimal(revenue_val)) * 100
         roa = (Decimal(np_val) / Decimal(assets_val)) * 100
         roe = (Decimal(np_val) / Decimal(capital_val)) * 100
 
-        rom_s.append(rom)
+        # rom_s.append(rom)
         rofa_s.append(rofa)
         ros_s.append(ros)
         roa_s.append(roa)
@@ -111,10 +115,11 @@ def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
             'ROA': roa_s,
             'ROS': ros_s,
             'ROFA': rofa_s,
-            'ROM': rom_s}
+            }
 
 
 def calculate_turnover_ratios(revenue, balance, capital, kT, kt, f, cc, zp, r):
+    decimal.getcontext().prec = 6
     # revenue - выручка
     # balance - баланс (среднегодовой)
     # capital - капитал и резервы (ср. годовое значение)

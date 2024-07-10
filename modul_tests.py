@@ -217,3 +217,45 @@ class TestNewIdeas(TestCase):
         self.assertEqual(first_list_length, 3)
         self.assertEqual(second_list_length, 2)
         self.assertGreater(first_list_length, second_list_length)
+
+    def test_basics(self):
+        data = {
+            '1110': [47372, 272, 91190],
+            '1120': [4899, 48399, 83990],
+
+        }
+
+        print(data['1110'][:-1])
+
+    def test_shit(self):
+        from aspose.cells import Workbook, LoadOptions, LoadFormat
+
+
+
+        flag = False
+        filename_in = 'xlx/Бухгалтерский баланс. Лист 1.xlsx'
+        try:
+            if 'xlsx' in filename_in:
+                self.filename_out = re.sub(r'\.xlsx*$', '.pdf', filename_in)
+                loadOptions = LoadOptions(LoadFormat.XLSX)
+                workbook = Workbook(filename_in, loadOptions)
+                workbook.save(self.filename_out)
+
+                flag = True
+                self.assertTrue(flag, 'Файл открылся успешно')
+            elif 'xls' in filename_in:
+                self.filename_out = re.sub(r'\.xlsx*$', '.pdf', filename_in)
+                workbook = Workbook(filename_in)
+                workbook.save(self.filename_out)
+
+                flag = True
+                self.assertTrue(flag, 'Файл открылся успешно')
+            else:
+                self.assertTrue(flag, 'Неверный формат файла')
+
+        except Exception as e:
+            if 'Could not find file' in str(e):
+                print('Файл не найден!')
+            else:
+                print(f'Проблемы с файлом:{e}')
+            self.assertFalse(flag, 'Упал в блоке except')
