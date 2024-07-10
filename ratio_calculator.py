@@ -30,14 +30,15 @@ def calculate_absolute_financial_stability(capital, non_current_assets, z, kT, k
     for num1, num2, num3, num4, num5 in zip(own_working_capital, kT, kt, ap, z):
         main_sources_for_supplies.append(num1 + num2 + num3 + num4 - num5)
 
-    return {'Собств. оборотные средства': own_working_capital,
-            'Дельта собств. средства для формирования запасов и затрат': own_capital_for_supply,
-            'Дельта собств. и долгосрочных источников для формирования запасов и затрат': own_capital_and_lp_for_supply,
-            'Дельта общей  величины  основных  источников для формирования запасов затрат': main_sources_for_supplies
+    return {'Абс. фин. устойчивость': {'Собств. оборотные средства': own_working_capital,
+                                       'Дельта собств. средства для формирования запасов и затрат': own_capital_for_supply,
+                                       'Дельта собств. и долгосрочных источников для формирования запасов и затрат': own_capital_and_lp_for_supply,
+                                       'Дельта общей  величины  основных  источников для формирования запасов затрат': main_sources_for_supplies
+                                       }
             }
 
 
-def calculate_financial_stability(capital, balance,  kT, kt, ap, own_working_capital):
+def calculate_financial_stability(capital, balance, kT, kt, ap, own_working_capital):
     decimal.getcontext().prec = 4
 
     # capital - капитал и резервы
@@ -59,9 +60,10 @@ def calculate_financial_stability(capital, balance,  kT, kt, ap, own_working_cap
     for num1, num2 in zip(own_working_capital, capital):
         mobility_ratio.append(Decimal(num1) / Decimal(num2))
 
-    return {'К. автономии': equity_ratio,
+    return {'Фин. устойчивость': {'К. автономии': equity_ratio,
             'К. соотн. собств. и заемных средств': debt_to_equity_ratio,
             'К. маневренности': mobility_ratio}
+            }
 
 
 def calculate_liquidity_ratios(d, kt, ap, r):
@@ -79,12 +81,13 @@ def calculate_liquidity_ratios(d, kt, ap, r):
 
         absolute_liquidity_ratios.append(absolute_liquidity)
         current_liquidity_ratios.append(current_liquidity)
-    return {'Абсолютная ликвидность': absolute_liquidity_ratios,
+    return {'Ликвидность': {'Абсолютная ликвидность': absolute_liquidity_ratios,
             'Ликвидность': current_liquidity_ratios}
+            }
 
 
 def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
-    decimal.getcontext().prec = 4
+    decimal.getcontext().prec = 3
     # np - Чистая прибыль
     # cc - Себестоимость
     # oc - Основные средства
@@ -99,7 +102,7 @@ def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
     roa_s = []
     roe_s = []
     for np_val, cc_val, oc_val, pf_val, revenue_val, assets_val, capital_val in zip(np, cc, oc, pf, revenue, assets,
-                                                                                   capital):
+                                                                                    capital):
         # rom = (Decimal(np_val) / Decimal(cc_val)) * 100
         rofa = (Decimal(np_val) / Decimal(oc_val)) * 100
         ros = (Decimal(pf_val) / Decimal(revenue_val)) * 100
@@ -112,10 +115,11 @@ def calculate_return_on_ratios(np, cc, oc, pf, revenue, assets, capital):
         roa_s.append(roa)
         roe_s.append(roe)
 
-    return {'ROE': roe_s,
+    return {'Рентабельность': {'ROE': roe_s,
             'ROA': roa_s,
             'ROS': ros_s,
             'ROFA': rofa_s,
+            }
             }
 
 
@@ -142,7 +146,6 @@ def calculate_turnover_ratios(revenue, balance, capital, kT, kt, f, cc, zp, r):
     credit_terms = []  # Срок товарного кредита
 
     for values in zip(revenue, balance, capital, kT, kt, f, cc, zp, r):
-
         asset_turnover_ratio = Decimal(values[0]) / Decimal(values[1])
         equity_turnover_ratio = Decimal(values[0]) / Decimal(values[2])
 
@@ -167,7 +170,7 @@ def calculate_turnover_ratios(revenue, balance, capital, kT, kt, f, cc, zp, r):
         receivables_turnover_ratios.append(receivables_turnover_ratio)
         credit_terms.append(credit_term)
 
-    return {
+    return {'Оборачиваемость': {
         "Оборачиваемость активов": asset_turnover_ratios,
         "Оборачиваемость собственного капитала": equity_turnover_ratios,
         "Оборачиваемость заемного капитала": borrowed_capital_turnover_ratios,
@@ -176,4 +179,5 @@ def calculate_turnover_ratios(revenue, balance, capital, kT, kt, f, cc, zp, r):
         "Оборачиваемость запасов в днях": production_inventory_turnover_ratios,
         "Оборачиваемость дебиторской задолженности": receivables_turnover_ratios,
         "Срок товарного кредита": credit_terms
+    }
     }
