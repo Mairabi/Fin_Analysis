@@ -247,3 +247,33 @@ class TestNewIdeas(TestCase):
             else:
                 print(f'Проблемы с файлом:{e}')
             self.assertFalse(flag, 'Упал в блоке except')
+
+    def table_cleaner(self, table):
+        clean_table = []
+        for row_num in range(len(table)):
+            row = table[row_num]
+            cleaned_row = [
+                item.replace('\n', ' ') if '\n' in item else item
+                for item in row
+                if item is not None
+            ]
+            clean_table.append(cleaned_row)
+        return clean_table
+
+    def test_years_extraction(self):
+
+        pattern = r"20[2-9][0-9]"
+
+        doc = pymupdf.open("xlx/Отчет о финансовых результатах. Лист 1.pdf")
+        page = doc[0]
+        tabs = page.find_tables(snap_tolerance=2.5)
+
+        if tabs:
+            tab = tabs[1].extract()
+            new_table = self.table_cleaner(tab)
+            years = [item.split()[-2] for item in new_table[0] if 'г.' in item]
+
+            print(years)
+
+            self.assertIn('2021', years)
+

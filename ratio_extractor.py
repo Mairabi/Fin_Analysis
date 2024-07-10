@@ -9,10 +9,11 @@ class FileProcessingError(Exception):
 
 
 class RatioExtractor:
-    def __init__(self, filename_in, economic_values=None, filename_out=''):
+    def __init__(self, filename_in, economic_values=None, filename_out='', years=None):
         self.filename_in = filename_in
         self.filename_out = filename_out
         self.economic_values = economic_values
+        self.years = years
 
     # Преобразование xlx файлов в pdf
     def xlx_to_pdf(self, filename_in):
@@ -92,13 +93,13 @@ class RatioExtractor:
             page = doc[0]
             tabs = page.find_tables(snap_tolerance=2.5)
 
-            if tabs:  # Хотя бы одна таблица найдена?
-                print(f"{len(tabs)} tables found on {page}")  # Количество таблиц на странице
+            if tabs.tables:  # Хотя бы одна таблица найдена?
+                print(f"{len(tabs.tables)} tables found on {page}")  # Количество таблиц на странице
                 # Ищем нужную таблицу
                 keyword = ''
                 k = 0
                 while keyword != 'Пояснения':
-                    if k >= len(tabs):
+                    if k >= len(tabs.tables):
                         print("Не найдена ни одна подходящая таблица!")
                         doc.close()
                         return False
@@ -108,8 +109,11 @@ class RatioExtractor:
                     k += 1
                 else:
                     new_table = self.table_cleaner(tab)
+                    self.years = [item.split()[-2] for item in new_table[0] if 'г.' in item]
+
                     self.dict_creator(new_table)
                     self.num_cleaner(self.economic_values)
+
                     doc.close()
                     return self.economic_values
             else:
