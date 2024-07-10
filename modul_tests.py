@@ -218,20 +218,8 @@ class TestNewIdeas(TestCase):
         self.assertEqual(second_list_length, 2)
         self.assertGreater(first_list_length, second_list_length)
 
-    def test_basics(self):
-        data = {
-            '1110': [47372, 272, 91190],
-            '1120': [4899, 48399, 83990],
-
-        }
-
-        print(data['1110'][:-1])
-
-    def test_shit(self):
+    def test_file_exceptions(self):
         from aspose.cells import Workbook, LoadOptions, LoadFormat
-
-
-
         flag = False
         filename_in = 'xlx/Бухгалтерский баланс. Лист 1.xlsx'
         try:

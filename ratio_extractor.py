@@ -2,9 +2,11 @@ import pymupdf
 import re
 from aspose.cells import Workbook, LoadOptions, LoadFormat
 
+
 class FileProcessingError(Exception):
     """Custom exception for file processing errors"""
     pass
+
 
 class RatioExtractor:
     def __init__(self, filename_in, economic_values=None, filename_out=''):
@@ -123,5 +125,3 @@ if __name__ == '__main__':
     filename_in = 'xlx\Бухгалтерский баланс. Лист 2.xl'
     extr = RatioExtractor(filename_in).get_data()
     print(extr)
-
-

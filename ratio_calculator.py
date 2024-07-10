@@ -76,6 +76,7 @@ def calculate_liquidity_ratios(d, kt, ap, r):
     for d_val, kt_val, ap_val, r_val in zip(d, kt, ap, r):
         absolute_liquidity = Decimal(d_val) / (Decimal(kt_val) + Decimal(ap_val))
         current_liquidity = (Decimal(d_val) + Decimal(r_val)) / (Decimal(kt_val) + Decimal(ap_val))
+
         absolute_liquidity_ratios.append(absolute_liquidity)
         current_liquidity_ratios.append(current_liquidity)
     return {'Абсолютная ликвидность': absolute_liquidity_ratios,
