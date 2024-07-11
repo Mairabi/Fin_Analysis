@@ -4,16 +4,22 @@ from aspose.cells import Workbook, LoadOptions, LoadFormat
 
 
 class FileProcessingError(Exception):
-    """Custom exception for file processing errors"""
-    pass
+    """Обработка файловых исключений"""
+
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
+    def __str__(self):
+        return self.message
 
 
 class RatioExtractor:
-    def __init__(self, filename_in, economic_values=None, filename_out='', years=None):
+    def __init__(self, filename_in, filename_out=''):
         self.filename_in = filename_in
         self.filename_out = filename_out
-        self.economic_values = economic_values
-        self.years = years
+        self.economic_values = None
+        self.years = None
 
     # Преобразование xlx файлов в pdf
     def xlx_to_pdf(self, filename_in):
@@ -84,9 +90,9 @@ class RatioExtractor:
         try:
             self.xlx_to_pdf(self.filename_in)
 
-        except FileProcessingError:
-            print("Прерывание выполнения из-за ошибки преобразования файла.")
-            return False
+        except FileProcessingError as e:
+            print(f"Прерывание выполнения из-за ошибки преобразования файла:{e.message}")
+            raise
 
         try:
             doc = pymupdf.open(self.filename_out)
@@ -102,7 +108,8 @@ class RatioExtractor:
                     if k >= len(tabs.tables):
                         print("Не найдена ни одна подходящая таблица!")
                         doc.close()
-                        return False
+                        raise FileProcessingError("Не найдена ни одна подходящая таблица!")
+
                     tab = tabs[k].extract()
                     keyword = tab[0][0]
 
@@ -117,15 +124,14 @@ class RatioExtractor:
                     doc.close()
                     return self.economic_values
             else:
-                print("Таблицы не обнаружены!")
                 doc.close()
-                return False
+                raise FileProcessingError("Таблицы не обнаружены!")
+
         except Exception as e:
-            print(f"Ошибка при обработке PDF: {e}")
-            return False
+            raise FileProcessingError(f"Ошибка при обработке PDF: {e}")
 
 
 if __name__ == '__main__':
-    filename_in = 'xlx\Бухгалтерский баланс. Лист 2.xl'
+    filename_in = 'xlx\Бухгалтерский баланс. Лист 2.xls'
     extr = RatioExtractor(filename_in).get_data()
     print(extr)

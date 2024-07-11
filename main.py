@@ -1,9 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from node import DataCreator
-
-# Пример данных для отображения
-
+from node import DataCreator, FileProcessingError
 
 class FinancialApp(tk.Tk):
     def __init__(self):
@@ -18,16 +15,36 @@ class FinancialApp(tk.Tk):
         self.create_welcome_window()
 
     def create_welcome_window(self):
-        welcome_frame = tk.Frame(self)
-        welcome_frame.pack(expand=True, fill=tk.BOTH)
+        self.welcome_frame = tk.Frame(self)
+        self.welcome_frame.pack(expand=True, fill=tk.BOTH)
 
-        welcome_label = tk.Label(welcome_frame, text="Добро пожаловать.\nВыберите необходимые файлы",
+        welcome_label = tk.Label(self.welcome_frame, text="Добро пожаловать.\nВыберите необходимые файлы",
                                  font=("Times New Roman", 25), justify="center", anchor='center')
         welcome_label.pack(pady=50)
 
-        select_button = tk.Button(welcome_frame, text="Выбрать файлы", font=("Times New Roman", 14),
+        select_button = tk.Button(self.welcome_frame, text="Выбрать файлы", font=("Times New Roman", 14),
                                   command=self.select_files, width=15, height=2)
         select_button.pack(pady=25)
+
+    def center_window(self, window, width, height, relative_widget):
+        # Функция центрирования окна относительно другого окна
+        relative_widget.update_idletasks()  # Обновляем информацию о виджете
+        x = relative_widget.winfo_x() + (relative_widget.winfo_width() // 2) - (width // 2)
+        y = relative_widget.winfo_y() + (relative_widget.winfo_height() // 2) - (height // 2)
+        window.geometry('%dx%d+%d+%d' % (width, height, x, y))
+
+    def show_loading_screen(self):
+        self.loading_screen = tk.Toplevel(self)
+
+        self.loading_screen.title("Загрузка")
+        self.loading_screen.geometry("300x100")
+
+        tk.Label(self.loading_screen, text="Пожалуйста, подождите...", font=("Times New Roman", 14)).pack(pady=20)
+        self.center_window(self.loading_screen, 300, 100, self.welcome_frame)
+        self.loading_screen.grab_set()
+
+    def hide_loading_screen(self):
+        self.loading_screen.destroy()
 
     # Здесь создаем экземпляр класса DataCreator и запускаем процедуры извлечения и расчетов
     def select_files(self):
@@ -35,11 +52,21 @@ class FinancialApp(tk.Tk):
         if len(self.filepaths) != 3:
             messagebox.showerror("Ошибка", "Пожалуйста, выберите ровно три файла")
         else:
-            data_creator = DataCreator(self.filepaths)
-            self.data = data_creator.get_ratios()
-            self.years = data_creator.years_of_balance
+            self.show_loading_screen()
+            self.update()
 
-            self.create_main_window()
+            data_creator = DataCreator(self.filepaths)
+            try:
+                self.data = data_creator.get_ratios()
+                self.years = data_creator.years_of_balance
+            except FileProcessingError as e:
+                messagebox.showerror("Ошибка", f"{e.message}\nВыберите файлы снова")
+            except KeyError:
+                messagebox.showerror("Ошибка", f"Один из файлов не содержит нужной информации.\nВыберите файлы снова")
+            else:
+                self.create_main_window()
+            finally:
+                self.hide_loading_screen()
 
     def create_main_window(self):
         for widget in self.winfo_children():
