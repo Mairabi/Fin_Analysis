@@ -1,6 +1,6 @@
 import pymupdf
 import re
-from aspose.cells import Workbook, LoadOptions, LoadFormat
+from aspose.cells import Workbook, LoadOptions, LoadFormat, PdfSaveOptions
 
 
 class FileProcessingError(Exception):
@@ -24,17 +24,24 @@ class RatioExtractor:
     # Преобразование xlx файлов в pdf
     def xlx_to_pdf(self, filename_in):
         try:
-            if 'xlsx' in filename_in:
+            if filename_in.endswith('.xlsx'):
                 self.filename_out = re.sub(r'\.xlsx*$', '.pdf', filename_in)
                 loadOptions = LoadOptions(LoadFormat.XLSX)
                 workbook = Workbook(filename_in, loadOptions)
-                workbook.save(self.filename_out)
-            elif 'xls' in filename_in:
-                self.filename_out = re.sub(r'\.xlsx*$', '.pdf', filename_in)
+            elif filename_in.endswith('.xls'):
+                self.filename_out = re.sub(r'\.xls$', '.pdf', filename_in)
                 workbook = Workbook(filename_in)
-                workbook.save(self.filename_out)
             else:
                 raise FileProcessingError('Неверный формат файла!')
+
+            # Установка параметров страницы для печати на одной странице
+            for worksheet in workbook.worksheets:
+                worksheet.page_setup.fit_to_pages_wide = 1
+                worksheet.page_setup.fit_to_pages_tall = 1
+
+            # Сохранение в PDF с использованием параметров печати
+            pdf_save_options = PdfSaveOptions()
+            workbook.save(self.filename_out, pdf_save_options)
 
         except Exception as e:
             if 'Could not find file' in str(e):
@@ -65,8 +72,10 @@ class RatioExtractor:
             for i, item in enumerate(numbers):
                 if re.search(pattern, item):
                     cleaned_number = item.replace(' ', '')
-                    if cleaned_number[0] == '-':
-                        numbers[i] = -int(cleaned_number[2:-1])
+                    if cleaned_number.startswith('-'):
+                        numbers[i] = int(cleaned_number)
+                    elif cleaned_number.startswith('('):
+                        numbers[i] = -int(cleaned_number[1:-1])
                     else:
                         numbers[i] = int(cleaned_number)
         return info
@@ -132,6 +141,6 @@ class RatioExtractor:
 
 
 if __name__ == '__main__':
-    filename_in = 'xlx\Бухгалтерский баланс. Лист 2.xls'
+    filename_in = 'xlx/Тестовый отчет о фин. Лист 1.xlsx'
     extr = RatioExtractor(filename_in).get_data()
     print(extr)

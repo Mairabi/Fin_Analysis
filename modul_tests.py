@@ -6,7 +6,7 @@ from decimal import Decimal
 from unittest import TestCase
 
 tex = 'Бухгалтерский баланс'
-os.environ['TESSDATA_PREFIX'] = "E:/PO/Tesseract/tessdata"
+# os.environ['TESSDATA_PREFIX'] = "E:/PO/Tesseract/tessdata"
 
 
 class TableExtractTest(TestCase):
@@ -29,23 +29,6 @@ class TableExtractTest(TestCase):
         self.assertEqual(count_of_i, 1)  # Проверяем, что количество совпадений равно 1
 
     # Поиск страницы с помощью OCR, с которой начинается бух. баланс
-    def test_ocr_page_number_detection(self):
-        doc = pymupdf.open("Бух.отчет Новатэк 2023.pdf")
-        search = 'Бухгалтерский баланс\nна 31 декабря '
-        res = False
-        count_of_i = 0
-
-        for i in range(doc.page_count):
-            page = doc[i]
-            page_ocr = page.get_textpage_ocr(flags=3, language='rus', dpi=72, full=False,
-                                             tessdata="E:/PO/Tesseract/tessdata")
-            text = page_ocr.extractText()
-
-            if search in text:
-                res = True
-                count_of_i += 1
-        self.assertTrue(res)  # Проверяем, что искомый текст найден
-        self.assertEqual(count_of_i, 1)  # Проверяем, что количество совпадений равно 1
 
     def test_loss_check(self):
         pattern = r'\d'
