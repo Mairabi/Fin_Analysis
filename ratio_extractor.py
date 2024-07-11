@@ -15,9 +15,9 @@ class FileProcessingError(Exception):
 
 
 class RatioExtractor:
-    def __init__(self, filename_in, filename_out=''):
+    def __init__(self, filename_in):
         self.filename_in = filename_in
-        self.filename_out = filename_out
+        self.filename_out = ''
         self.economic_values = None
         self.years = None
 
@@ -72,10 +72,8 @@ class RatioExtractor:
             for i, item in enumerate(numbers):
                 if re.search(pattern, item):
                     cleaned_number = item.replace(' ', '')
-                    if cleaned_number.startswith('-'):
-                        numbers[i] = int(cleaned_number)
-                    elif cleaned_number.startswith('('):
-                        numbers[i] = -int(cleaned_number[1:-1])
+                    if cleaned_number[0] == '-':
+                        numbers[i] = -int(cleaned_number[2:-1])
                     else:
                         numbers[i] = int(cleaned_number)
         return info

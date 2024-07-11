@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from node import DataCreator, FileProcessingError
 
+
 class FinancialApp(tk.Tk):
     def __init__(self):
         super().__init__()
